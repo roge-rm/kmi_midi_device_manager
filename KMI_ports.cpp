@@ -16,6 +16,7 @@
 */
 
 #include "KMI_ports.h"
+#include <QRegularExpression>
 #include "KMI_DevData.h"
 #include <QSettings>
 
@@ -610,11 +611,11 @@ QString portNameFix(QString portName)
     //qDebug() << "portNameFix called - portName: " << portName;
 
 #ifdef Q_OS_LINUX
-    // Linux puts a " 20" at the end of each port name, remove it and this should work
-    portName = portName.left(portName.length() -3);
-    // Linux puts a "<devicename>:" at the beginning of the portname, remove it
+    // RtMidi's ALSA names are "<client>:<port> <client#>:<port#>", keep just "<port>"
+    portName.remove(QRegularExpression(" \\d+:\\d+$"));
     portName = portName.mid(portName.indexOf(":")+1);
     qDebug() << "Fixed linux portname: " << portName;
+    return portName;
 #endif
 
 
